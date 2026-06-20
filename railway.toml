@@ -1,0 +1,4 @@
+# Railway construye el OpenSearch usando el Dockerfile de ./opensearch (no autodetección).
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "opensearch/Dockerfile"
