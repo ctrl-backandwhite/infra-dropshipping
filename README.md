@@ -9,20 +9,24 @@ Infraestructura desplegable en Railway para la plataforma NX036 Dropshipping.
 
 OpenSearch con el **plugin de seguridad activo** (auth básica + TLS), en **red privada** (sin dominio público).
 
-### Desplegar en Railway
-1. **New Service → Deploy from Repo** → selecciona este repo y pon **Root Directory** = `opensearch`.
-2. En **Settings → Build**, asegúrate de que el **Builder = Dockerfile** (no Railpack/Nixpacks).
-3. **Variable del servicio** (secreto):
+### Desplegar en Railway (IMPORTANTE el Root Directory)
+1. **New Service → Deploy from Repo** → este repo.
+2. **Settings → Source → Root Directory** = **`opensearch`** ← imprescindible (si no, Railway construye
+   desde la raíz, no encuentra el Dockerfile y falla el build).
+3. **Settings → Build → Builder** = **Dockerfile** (no Railpack/Nixpacks).
+4. **Variables del servicio** (Settings → Variables):
 
    | Variable | Valor |
    |---|---|
-   | `OPENSEARCH_INITIAL_ADMIN_PASSWORD` | una clave fuerte (≥8, mayús, minús, dígito y símbolo) |
+   | `OPENSEARCH_INITIAL_ADMIN_PASSWORD` | clave fuerte (≥8, mayús, minús, dígito, símbolo) |
+   | `discovery.type` | `single-node` |
+   | `bootstrap.memory_lock` | `false` |
 
-4. **Volumen** (persistencia de índices): monta un volume en `/usr/share/opensearch/data`.
-5. **NO** le añadas dominio público.
+   *(Railway acepta nombres de variable con punto; OpenSearch los lee como settings.)*
+5. **Volumen** (persistencia de índices): monta un volume en `/usr/share/opensearch/data`.
+6. **NO** le añadas dominio público.
 
-### Conexión desde el backend (mic-dropshipping)
-Ya configurado por variables:
+### Conexión desde el backend (mic-dropshipping) — ya configurado por variables
 ```
 OPENSEARCH_URIS=https://<servicio-opensearch>.railway.internal:9200
 OPENSEARCH_USERNAME=admin
@@ -33,5 +37,5 @@ OPENSEARCH_TLS_INSECURE=true   # cert autofirmado en red privada (cifrado, sin v
 ### Notas de seguridad
 - `single-node` omite los bootstrap checks (incl. `vm.max_map_count`, no ajustable en Railway).
 - Auth + TLS activos. El backend confía en el cert autofirmado (`OPENSEARCH_TLS_INSECURE=true`)
-  porque va por red privada; para validación estricta, importar la CA del cluster.
+  por ir en red privada; para validación estricta, importar la CA del cluster.
 - Sin dominio público ⇒ solo accesible desde servicios del mismo proyecto Railway.
