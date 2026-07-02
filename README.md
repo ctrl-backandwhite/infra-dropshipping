@@ -39,3 +39,29 @@ OPENSEARCH_TLS_INSECURE=true   # cert autofirmado en red privada (cifrado, sin v
 - Auth + TLS activos. El backend confía en el cert autofirmado (`OPENSEARCH_TLS_INSECURE=true`)
   por ir en red privada; para validación estricta, importar la CA del cluster.
 - Sin dominio público ⇒ solo accesible desde servicios del mismo proyecto Railway.
+
+## `minio/` — MinIO object storage (imágenes de producto)
+
+Imagen **oficial** `minio/minio`, propia y determinista (NO el template Bitnami, retirado de Docker Hub en 2025).
+
+### Desplegar en Railway (IMPORTANTE el Root Directory)
+1. **New Service → Deploy from Repo** → este repo.
+2. **Settings → Source → Root Directory** = **`minio`** ← imprescindible.
+3. **Settings → Build → Builder** = **Dockerfile**.
+4. **Volumen** (persistencia): monta un volume en **`/data`** (mismo mount que el template anterior).
+5. **Networking**: genera **DOMINIO PÚBLICO en el puerto `9000`** (API S3). *(No expongas 9001/consola.)*
+6. **Variables del servicio**:
+
+   | Variable | Valor |
+   |---|---|
+   | `MINIO_ROOT_USER` | `nexadrop` |
+   | `MINIO_ROOT_PASSWORD` | `<misma que STORAGE_SECRET_KEY del backend>` |
+
+El **bucket `product-images`** y su política de lectura pública los crea el backend al arrancar.
+
+### Conexión desde el backend (mic-dropshipping)
+- `STORAGE_ENDPOINT=http://minio.railway.internal:9000`
+- `STORAGE_PUBLIC_URL=https://<dominio-público-minio>/product-images`
+- `STORAGE_BUCKET=product-images`
+- `STORAGE_ACCESS_KEY=nexadrop`
+- `STORAGE_SECRET_KEY=<misma password que MINIO_ROOT_PASSWORD>`
