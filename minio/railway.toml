@@ -1,0 +1,5 @@
+# Config propia de MinIO para que ESTE servicio NO lea el railway.toml raíz (que apunta a opensearch).
+# En Railway, servicio minio → Settings → Config-as-code Path = minio/railway.toml
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "minio/Dockerfile"
