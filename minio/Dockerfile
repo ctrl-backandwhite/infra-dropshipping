@@ -3,7 +3,7 @@
 # template Bitnami de la comunidad, que Docker Hub retiró en 2025 y dejó de desplegar).
 #
 # Almacén de imágenes de producto: el backend (mic-dropshipping) descarga las imágenes de
-# origen (1688/Taobao) SIN Referer y las sube aquí; el navegador las sirve desde el DOMINIO
+# origen SIN Referer y las sube aquí; el navegador las sirve desde el DOMINIO
 # PÚBLICO de este servicio (puerto 9000 = API S3). El bucket `product-images` y su política
 # de lectura pública los crea el backend al arrancar.
 #
